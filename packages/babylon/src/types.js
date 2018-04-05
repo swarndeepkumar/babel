@@ -941,6 +941,18 @@ export type EstreeProperty = NodeBase & {
   variance?: ?FlowVariance,
 };
 
+export type EstreeMethodDefinition = NodeBase & {
+  type: "MethodDefinition",
+  static: boolean,
+  key: Expression,
+  computed: boolean,
+  value: Expression,
+  decorators: $ReadOnlyArray<Decorator>,
+  kind?: "get" | "set" | "method",
+
+  variance?: ?FlowVariance,
+};
+
 // === === === ===
 // TypeScript
 // === === === ===
@@ -1192,9 +1204,9 @@ export type TsIndexedAccessType = TsTypeBase & {
 
 export type TsMappedType = TsTypeBase & {
   type: "TSMappedType",
-  readonly?: true,
+  readonly?: true | "+" | "-",
   typeParameter: TsTypeParameter,
-  optional?: true,
+  optional?: true | "+" | "-",
   typeAnnotation: ?TsType,
 };
 

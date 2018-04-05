@@ -28,7 +28,6 @@ export default function(commander, filenames, opts) {
       defaults(
         {
           sourceFileName: slash(path.relative(dest + "/..", src)),
-          sourceMapTarget: path.basename(relative),
         },
         opts,
       ),
@@ -44,6 +43,7 @@ export default function(commander, filenames, opts) {
         ) {
           const mapLoc = dest + ".map";
           res.code = util.addSourceMappingUrl(res.code, mapLoc);
+          res.map.file = path.basename(relative);
           outputFileSync(mapLoc, JSON.stringify(res.map));
         }
 
@@ -61,6 +61,13 @@ export default function(commander, filenames, opts) {
   function getDest(commander, filename, base) {
     if (commander.relative) return path.join(base, commander.outDir, filename);
     return path.join(commander.outDir, filename);
+  }
+
+  function outputDestFolder(outDir) {
+    const outDirPath = path.resolve(outDir);
+    if (!fs.existsSync(outDirPath)) {
+      fs.mkdirSync(outDirPath);
+    }
   }
 
   function handleFile(src, filename, base, callback) {
@@ -82,6 +89,11 @@ export default function(commander, filenames, opts) {
   }
 
   function sequentialHandleFile(files, dirname, index, callback) {
+    if (files.length === 0) {
+      outputDestFolder(commander.outDir);
+      return;
+    }
+
     if (typeof index === "function") {
       callback = index;
       index = 0;
